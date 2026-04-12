@@ -1,0 +1,117 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Flower Care Sensor auswählen",
+        "description": "{count} kompatibler Sensor gefunden.",
+        "data": {
+          "device_id": "Sensor"
+        }
+      },
+      "calibrate_illuminance": {
+        "title": "Beleuchtungsstärke kalibrieren",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\n\nMessung bei verschiedenen Lichtstärken: MI-Sensor-Wert und gleichzeitigen Lux-Meter-Wert eingeben.\nFelder leer lassen um diese Kalibrierung zu überspringen.",
+        "data": {
+          "p1_raw": "Messung 1 — MI-Sensor (lx)",
+          "p1_ref": "Messung 1 — Lux-Meter (lx)",
+          "p2_raw": "Messung 2 — MI-Sensor (lx)",
+          "p2_ref": "Messung 2 — Lux-Meter (lx)",
+          "p3_raw": "Messung 3 — MI-Sensor (lx)",
+          "p3_ref": "Messung 3 — Lux-Meter (lx)"
+        }
+      },
+      "calibrate_moisture": {
+        "title": "Bodenfeuchte kalibrieren",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\n\nFelder leer lassen um diese Kalibrierung zu überspringen.",
+        "data": {
+          "p1_raw": "Messung 1 — MI-Sensor (%)",
+          "p1_ref": "Messung 1 — Referenz (%)",
+          "p2_raw": "Messung 2 — MI-Sensor (%)",
+          "p2_ref": "Messung 2 — Referenz (%)",
+          "p3_raw": "Messung 3 — MI-Sensor (%)",
+          "p3_ref": "Messung 3 — Referenz (%)"
+        }
+      },
+      "calibrate_conductivity": {
+        "title": "Leitfähigkeit kalibrieren",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\n\nFelder leer lassen um diese Kalibrierung zu überspringen.",
+        "data": {
+          "p1_raw": "Messung 1 — MI-Sensor (µS/cm)",
+          "p1_ref": "Messung 1 — Referenz (µS/cm)",
+          "p2_raw": "Messung 2 — MI-Sensor (µS/cm)",
+          "p2_ref": "Messung 2 — Referenz (µS/cm)",
+          "p3_raw": "Messung 3 — MI-Sensor (µS/cm)",
+          "p3_ref": "Messung 3 — Referenz (µS/cm)"
+        }
+      },
+      "calibrate_temperature": {
+        "title": "Temperatur kalibrieren",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\n\nFelder leer lassen um diese Kalibrierung zu überspringen.",
+        "data": {
+          "p1_raw": "Messung 1 — MI-Sensor (°C)",
+          "p1_ref": "Messung 1 — Referenz (°C)",
+          "p2_raw": "Messung 2 — MI-Sensor (°C)",
+          "p2_ref": "Messung 2 — Referenz (°C)",
+          "p3_raw": "Messung 3 — MI-Sensor (°C)",
+          "p3_ref": "Messung 3 — Referenz (°C)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Dieser Sensor ist bereits kalibriert.",
+      "no_devices_found": "Keine kompatiblen Flower Care / MI Flora Sensoren gefunden. Stelle sicher dass die Xiaomi BLE Integration eingerichtet ist."
+    }
+  },
+  "options": {
+    "step": {
+      "calibrate_illuminance": {
+        "title": "Beleuchtungsstärke neu kalibrieren",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: Faktor {current_factor}, Offset {current_offset}\n\nNeue Messwerte eingeben oder Felder leerlassen um bestehende Kalibrierung beizubehalten.",
+        "data": {
+          "p1_raw": "Messung 1 — MI-Sensor (lx)",
+          "p1_ref": "Messung 1 — Lux-Meter (lx)",
+          "p2_raw": "Messung 2 — MI-Sensor (lx)",
+          "p2_ref": "Messung 2 — Lux-Meter (lx)",
+          "p3_raw": "Messung 3 — MI-Sensor (lx)",
+          "p3_ref": "Messung 3 — Lux-Meter (lx)"
+        }
+      },
+      "calibrate_moisture": {
+        "title": "Bodenfeuchte neu kalibrieren",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: Faktor {current_factor}, Offset {current_offset}\n\nNeue Messwerte eingeben oder Felder leer lassen um bestehende Kalibrierung beizubehalten.",
+        "data": {
+          "p1_raw": "Messung 1 — MI-Sensor (%)",
+          "p1_ref": "Messung 1 — Referenz (%)",
+          "p2_raw": "Messung 2 — MI-Sensor (%)",
+          "p2_ref": "Messung 2 — Referenz (%)",
+          "p3_raw": "Messung 3 — MI-Sensor (%)",
+          "p3_ref": "Messung 3 — Referenz (%)"
+        }
+      },
+      "calibrate_conductivity": {
+        "title": "Leitfähigkeit neu kalibrieren",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: Faktor {current_factor}, Offset {current_offset}\n\nNeue Messwerte eingeben oder Felder leer lassen um bestehende Kalibrierung beizubehalten.",
+        "data": {
+          "p1_raw": "Messung 1 — MI-Sensor (µS/cm)",
+          "p1_ref": "Messung 1 — Referenz (µS/cm)",
+          "p2_raw": "Messung 2 — MI-Sensor (µS/cm)",
+          "p2_ref": "Messung 2 — Referenz (µS/cm)",
+          "p3_raw": "Messung 3 — MI-Sensor (µS/cm)",
+          "p3_ref": "Messung 3 — Referenz (µS/cm)"
+        }
+      },
+      "calibrate_temperature": {
+        "title": "Temperatur neu kalibrieren",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: Faktor {current_factor}, Offset {current_offset}\n\nNeue Messwerte eingeben oder Felder leer lassen um bestehende Kalibrierung beizubehalten.",
+        "data": {
+          "p1_raw": "Messung 1 — MI-Sensor (°C)",
+          "p1_ref": "Messung 1 — Referenz (°C)",
+          "p2_raw": "Messung 2 — MI-Sensor (°C)",
+          "p2_ref": "Messung 2 — Referenz (°C)",
+          "p3_raw": "Messung 3 — MI-Sensor (°C)",
+          "p3_ref": "Messung 3 — Referenz (°C)"
+        }
+      }
+    }
+  }
+}
