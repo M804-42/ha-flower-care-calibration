@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 from typing import Any
 
 import voluptuous as vol
@@ -9,8 +10,6 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr, entity_registry as er
-
-from datetime import datetime
 
 from .const import (
     CONF_CALIBRATED_AT,
@@ -20,6 +19,7 @@ from .const import (
     CONF_OFFSET,
     CONF_OFFSET2,
     CONF_POINTS,
+    CONF_RAW_MIN,
     CONF_SENSORS,
     CONF_SOURCE_ENTITY,
     CONF_THRESHOLD,
@@ -253,6 +253,8 @@ class FlowerCareCalibrationConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             points = self._extract_points(user_input)
             threshold, f1, o1, f2, o2 = calculate_piecewise_calibration(points)
+            valid = sorted([p for p in points if p[0] > 0], key=lambda p: p[0])
+            raw_min = valid[0][0] if valid else 0.0
             self._calibration_data[sensor_type] = {
                 CONF_SOURCE_ENTITY: source_entity,
                 CONF_POINTS: points,
@@ -261,6 +263,7 @@ class FlowerCareCalibrationConfigFlow(ConfigFlow, domain=DOMAIN):
                 CONF_FACTOR2: f2,
                 CONF_OFFSET2: o2,
                 CONF_THRESHOLD: threshold,
+                CONF_RAW_MIN: raw_min,
                 CONF_CALIBRATED_AT: datetime.now().isoformat(timespec="seconds"),
             }
 
@@ -397,6 +400,8 @@ class FlowerCareCalibrationOptionsFlow(OptionsFlow):
             threshold, f1, o1, f2, o2 = calculate_piecewise_calibration(points)
             if points or sensor_type in self._calibration_data:
                 existing = self._calibration_data.get(sensor_type, {})
+                valid = sorted([p for p in points if p[0] > 0], key=lambda p: p[0])
+                raw_min = valid[0][0] if valid else existing.get(CONF_RAW_MIN, 0.0)
                 self._calibration_data[sensor_type] = {
                     CONF_SOURCE_ENTITY: source_entity,
                     CONF_POINTS: points,
@@ -405,6 +410,7 @@ class FlowerCareCalibrationOptionsFlow(OptionsFlow):
                     CONF_FACTOR2: f2,
                     CONF_OFFSET2: o2,
                     CONF_THRESHOLD: threshold,
+                    CONF_RAW_MIN: raw_min,
                     CONF_CALIBRATED_AT: datetime.now().isoformat(timespec="seconds") if points else existing.get(CONF_CALIBRATED_AT, ""),
                 }
 
