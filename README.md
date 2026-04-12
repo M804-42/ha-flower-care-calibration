@@ -60,10 +60,14 @@ Leave all fields empty for a sensor type to skip calibration (factor 1.0, offset
 
 **Tips for illuminance calibration**
 
-- Calibrate at **night using artificial light only** — sunlight varies too much
-- Use 3 levels spread across your plant's typical light range (e.g. ~200 / ~800 / ~3000 lx)
+- Calibrate at **night using artificial light only** — sunlight varies too much between measurements
+- Choose 3 points **spread across your plant's typical operating range** (e.g. ~500 / ~2000 / ~8000 lx at the reference meter)
+- Make sure the raw MI sensor values are also well spread — if two points give nearly identical raw values, the calibration will be inaccurate
+- **Avoid near-darkness measurements** (< 50 lx reference) — the MI sensor is highly non-linear at very low light and these points distort the calibration for the relevant range
+- Wait **at least 60 seconds** after changing the light level before noting the MI sensor value
+- Wait **10–15 minutes** after switching on LED lamps — LEDs drop slightly in output as they warm up
 - A dedicated lux meter gives much better results than a smartphone app
-- Avoid the extreme low-light range (< 10 lx) as MI sensors are highly non-linear there
+- With 3 measurement points, the integration automatically uses **piecewise linear calibration** (two separate correction curves below and above the middle point) for improved accuracy
 
 ### How it works
 
@@ -151,10 +155,14 @@ Alle Felder leer lassen, um die Kalibrierung eines Sensortyps zu überspringen (
 
 **Tipps zur Beleuchtungsstärke-Kalibrierung**
 
-- Kalibrierung **abends mit ausschließlich künstlichem Licht** — Tageslicht schwankt zu stark
-- 3 Messpunkte im typischen Betriebsbereich der Pflanze wählen (z.B. ~200 / ~800 / ~3000 lx)
+- Kalibrierung **abends mit ausschließlich künstlichem Licht** — Tageslicht schwankt zwischen den Messungen zu stark
+- 3 Messpunkte wählen die **gut über den typischen Betriebsbereich der Pflanze verteilt** sind (z.B. ~500 / ~2000 / ~8000 lx am Luxmeter)
+- Sicherstellen dass auch die MI-Rohwerte gut verteilt sind — wenn zwei Punkte nahezu identische Rohwerte liefern, wird die Kalibrierung ungenau
+- **Messungen im Dunkelbereich (< 50 lx)** vermeiden — der MI-Sensor ist dort stark nichtlinear und solche Punkte verfälschen die Kalibrierung im relevanten Bereich
+- Nach jeder Lichtänderung **mindestens 60 Sekunden warten** bevor der MI-Sensor-Wert notiert wird
+- Nach dem Einschalten von LED-Lampen **10–15 Minuten warten** — LEDs sinken beim Aufwärmen leicht in der Lichtleistung
 - Ein dediziertes Luxmeter liefert deutlich bessere Ergebnisse als eine Smartphone-App
-- Den extremen Dunkelbereich (< 10 lx) meiden — MI-Sensoren sind dort stark nichtlinear
+- Bei 3 Messpunkten verwendet die Integration automatisch eine **stückweise lineare Kalibrierung** (zwei separate Korrekturkurven unterhalb und oberhalb des mittleren Messpunkts) für höhere Genauigkeit
 
 ### Funktionsweise
 
