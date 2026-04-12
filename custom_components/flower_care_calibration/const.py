@@ -12,6 +12,7 @@ CONF_THRESHOLD = "threshold"
 CONF_POINTS = "points"
 CONF_SOURCE_ENTITY = "source_entity_id"
 CONF_CALIBRATED_AT = "calibrated_at"
+CONF_RAW_MIN = "raw_min"
 
 # Supported MI Flora / HHCC device models
 SUPPORTED_MODELS = [
