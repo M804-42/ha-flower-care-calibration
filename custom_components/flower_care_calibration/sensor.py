@@ -6,7 +6,6 @@ import logging
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
@@ -18,6 +17,7 @@ from .const import (
     CONF_FACTOR2,
     CONF_OFFSET,
     CONF_OFFSET2,
+    CONF_RAW_MIN,
     CONF_SENSORS,
     CONF_SOURCE_ENTITY,
     CONF_THRESHOLD,
@@ -58,6 +58,7 @@ async def async_setup_entry(
         factor2 = config.get(CONF_FACTOR2, factor)
         offset2 = config.get(CONF_OFFSET2, offset)
         threshold = config.get(CONF_THRESHOLD)
+        raw_min = config.get(CONF_RAW_MIN, 0.0)
         calibrated_at = config.get(CONF_CALIBRATED_AT, "")
 
         entities.append(
@@ -72,6 +73,7 @@ async def async_setup_entry(
                 factor2=factor2,
                 offset2=offset2,
                 threshold=threshold,
+                raw_min=raw_min,
                 calibrated_at=calibrated_at,
             )
         )
@@ -98,6 +100,7 @@ class CalibratedSensor(SensorEntity):
         factor2: float,
         offset2: float,
         threshold: float | None,
+        raw_min: float,
         calibrated_at: str,
     ) -> None:
         """Initialize."""
@@ -111,6 +114,7 @@ class CalibratedSensor(SensorEntity):
         self._factor2 = factor2
         self._offset2 = offset2
         self._threshold = threshold
+        self._raw_min = raw_min
         self._min_value = SENSOR_TYPES[sensor_type]["min_value"]
         self._max_value = SENSOR_TYPES[sensor_type]["max_value"]
 
@@ -172,7 +176,11 @@ class CalibratedSensor(SensorEntity):
 
         try:
             raw = float(state.state)
-            if self._threshold is not None and raw > self._threshold:
+            if self._raw_min > 0 and raw < self._raw_min:
+                # Below calibration range: extrapolate through origin using ratio at first point
+                ratio = (self._factor * self._raw_min + self._offset) / self._raw_min
+                calibrated = ratio * raw
+            elif self._threshold is not None and raw > self._threshold:
                 calibrated = self._factor2 * raw + self._offset2
             else:
                 calibrated = self._factor * raw + self._offset
