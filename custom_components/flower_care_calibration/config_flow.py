@@ -16,10 +16,13 @@ from .const import (
     CONF_CALIBRATED_AT,
     CONF_DEVICE_ID,
     CONF_FACTOR,
+    CONF_FACTOR2,
     CONF_OFFSET,
+    CONF_OFFSET2,
     CONF_POINTS,
     CONF_SENSORS,
     CONF_SOURCE_ENTITY,
+    CONF_THRESHOLD,
     DOMAIN,
     SENSOR_TYPES,
     SUPPORTED_MODELS,
@@ -56,6 +59,49 @@ def calculate_calibration(points: list[tuple[float, float]]) -> tuple[float, flo
     offset = (sum_y - factor * sum_x) / n
 
     return round(factor, 4), round(offset, 4)
+
+
+def calculate_piecewise_calibration(
+    points: list[tuple[float, float]],
+) -> tuple[float | None, float, float, float, float]:
+    """Calculate piecewise linear calibration from measurement points.
+
+    With 3 points: splits into two segments at the middle point.
+    With < 3 points: falls back to single linear segment.
+
+    Returns (threshold, factor1, offset1, factor2, offset2).
+    threshold=None means single segment (factor2/offset2 unused).
+    """
+    valid = sorted(
+        [(x, y) for x, y in points if x is not None and y is not None and x > 0],
+        key=lambda p: p[0],
+    )
+
+    if len(valid) < 3:
+        f, o = calculate_calibration(valid)
+        return None, f, o, f, o
+
+    # Middle point is the threshold
+    x1, y1 = valid[0]
+    x2, y2 = valid[1]
+    x3, y3 = valid[2]
+    threshold = x2
+
+    # Segment 1: points 0 → 1
+    if x2 != x1:
+        f1 = (y2 - y1) / (x2 - x1)
+        o1 = y1 - f1 * x1
+    else:
+        f1, o1 = 1.0, 0.0
+
+    # Segment 2: points 1 → 2
+    if x3 != x2:
+        f2 = (y3 - y2) / (x3 - x2)
+        o2 = y2 - f2 * x2
+    else:
+        f2, o2 = 1.0, 0.0
+
+    return round(threshold, 4), round(f1, 4), round(o1, 4), round(f2, 4), round(o2, 4)
 
 
 def find_sensor_entities(hass, device_id: str) -> dict[str, str]:
@@ -206,12 +252,15 @@ class FlowerCareCalibrationConfigFlow(ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             points = self._extract_points(user_input)
-            factor, offset = calculate_calibration(points)
+            threshold, f1, o1, f2, o2 = calculate_piecewise_calibration(points)
             self._calibration_data[sensor_type] = {
                 CONF_SOURCE_ENTITY: source_entity,
                 CONF_POINTS: points,
-                CONF_FACTOR: factor,
-                CONF_OFFSET: offset,
+                CONF_FACTOR: f1,
+                CONF_OFFSET: o1,
+                CONF_FACTOR2: f2,
+                CONF_OFFSET2: o2,
+                CONF_THRESHOLD: threshold,
                 CONF_CALIBRATED_AT: datetime.now().isoformat(timespec="seconds"),
             }
 
@@ -345,14 +394,17 @@ class FlowerCareCalibrationOptionsFlow(OptionsFlow):
 
         if user_input is not None:
             points = self._extract_points(user_input)
-            factor, offset = calculate_calibration(points)
+            threshold, f1, o1, f2, o2 = calculate_piecewise_calibration(points)
             if points or sensor_type in self._calibration_data:
                 existing = self._calibration_data.get(sensor_type, {})
                 self._calibration_data[sensor_type] = {
                     CONF_SOURCE_ENTITY: source_entity,
                     CONF_POINTS: points,
-                    CONF_FACTOR: factor,
-                    CONF_OFFSET: offset,
+                    CONF_FACTOR: f1,
+                    CONF_OFFSET: o1,
+                    CONF_FACTOR2: f2,
+                    CONF_OFFSET2: o2,
+                    CONF_THRESHOLD: threshold,
                     CONF_CALIBRATED_AT: datetime.now().isoformat(timespec="seconds") if points else existing.get(CONF_CALIBRATED_AT, ""),
                 }
 
@@ -390,6 +442,17 @@ class FlowerCareCalibrationOptionsFlow(OptionsFlow):
 
         existing_factor = existing.get(CONF_FACTOR, 1.0)
         existing_offset = existing.get(CONF_OFFSET, 0.0)
+        existing_threshold = existing.get(CONF_THRESHOLD)
+        existing_factor2 = existing.get(CONF_FACTOR2, existing_factor)
+        existing_offset2 = existing.get(CONF_OFFSET2, existing_offset)
+
+        if existing_threshold:
+            correction = (
+                f"≤{existing_threshold}: ×{existing_factor}+{existing_offset} | "
+                f">{existing_threshold}: ×{existing_factor2}+{existing_offset2}"
+            )
+        else:
+            correction = f"×{existing_factor}+{existing_offset}"
 
         return self.async_show_form(
             step_id=step_id,
@@ -398,8 +461,7 @@ class FlowerCareCalibrationOptionsFlow(OptionsFlow):
                 "sensor_name": SENSOR_TYPES[sensor_type]["name_de"],
                 "current_value": current_value,
                 "entity_id": source_entity or "nicht gefunden",
-                "current_factor": str(existing_factor),
-                "current_offset": str(existing_offset),
+                "current_correction": correction,
             },
         )
 
