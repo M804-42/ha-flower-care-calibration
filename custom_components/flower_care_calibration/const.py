@@ -8,6 +8,7 @@ CONF_FACTOR = "factor"
 CONF_OFFSET = "offset"
 CONF_POINTS = "points"
 CONF_SOURCE_ENTITY = "source_entity_id"
+CONF_CALIBRATED_AT = "calibrated_at"
 
 # Supported MI Flora / HHCC device models
 SUPPORTED_MODELS = [
