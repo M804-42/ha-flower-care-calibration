@@ -10,7 +10,10 @@ from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 
+from datetime import datetime
+
 from .const import (
+    CONF_CALIBRATED_AT,
     CONF_DEVICE_ID,
     CONF_FACTOR,
     CONF_OFFSET,
@@ -195,6 +198,12 @@ class FlowerCareCalibrationConfigFlow(ConfigFlow, domain=DOMAIN):
         """Generic calibration step for any sensor type."""
         source_entity = self._source_entities.get(sensor_type)
 
+        # Auto-skip if sensor type not available on this device
+        if not source_entity:
+            if next_step:
+                return await getattr(self, f"async_step_{next_step}")()
+            return self._create_entry()
+
         if user_input is not None:
             points = self._extract_points(user_input)
             factor, offset = calculate_calibration(points)
@@ -203,6 +212,7 @@ class FlowerCareCalibrationConfigFlow(ConfigFlow, domain=DOMAIN):
                 CONF_POINTS: points,
                 CONF_FACTOR: factor,
                 CONF_OFFSET: offset,
+                CONF_CALIBRATED_AT: datetime.now().isoformat(timespec="seconds"),
             }
 
             if next_step:
@@ -324,15 +334,26 @@ class FlowerCareCalibrationOptionsFlow(OptionsFlow):
         """Generic calibration step."""
         source_entity = self._source_entities.get(sensor_type)
 
+        # Auto-skip if sensor type not available on this device
+        if not source_entity:
+            if next_step:
+                return await getattr(self, f"async_step_{next_step}")()
+            return self.async_create_entry(
+                title="",
+                data={CONF_SENSORS: self._calibration_data},
+            )
+
         if user_input is not None:
             points = self._extract_points(user_input)
             factor, offset = calculate_calibration(points)
             if points or sensor_type in self._calibration_data:
+                existing = self._calibration_data.get(sensor_type, {})
                 self._calibration_data[sensor_type] = {
                     CONF_SOURCE_ENTITY: source_entity,
                     CONF_POINTS: points,
                     CONF_FACTOR: factor,
                     CONF_OFFSET: offset,
+                    CONF_CALIBRATED_AT: datetime.now().isoformat(timespec="seconds") if points else existing.get(CONF_CALIBRATED_AT, ""),
                 }
 
             if next_step:
