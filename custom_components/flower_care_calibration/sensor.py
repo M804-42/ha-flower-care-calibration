@@ -12,6 +12,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 
 from .const import (
+    CONF_CALIBRATED_AT,
     CONF_DEVICE_ID,
     CONF_FACTOR,
     CONF_OFFSET,
@@ -51,6 +52,7 @@ async def async_setup_entry(
             continue
         factor = config.get(CONF_FACTOR, 1.0)
         offset = config.get(CONF_OFFSET, 0.0)
+        calibrated_at = config.get(CONF_CALIBRATED_AT, "")
 
         entities.append(
             CalibratedSensor(
@@ -61,6 +63,7 @@ async def async_setup_entry(
                 source_entity_id=source_entity_id,
                 factor=factor,
                 offset=offset,
+                calibrated_at=calibrated_at,
             )
         )
 
@@ -83,6 +86,7 @@ class CalibratedSensor(SensorEntity):
         source_entity_id: str,
         factor: float,
         offset: float,
+        calibrated_at: str,
     ) -> None:
         """Initialize."""
         self.hass = hass
@@ -92,6 +96,8 @@ class CalibratedSensor(SensorEntity):
         self._source_entity_id = source_entity_id
         self._factor = factor
         self._offset = offset
+        self._min_value = SENSOR_TYPES[sensor_type]["min_value"]
+        self._max_value = SENSOR_TYPES[sensor_type]["max_value"]
 
         type_info = SENSOR_TYPES[sensor_type]
         self._attr_unique_id = f"{entry.entry_id}_{sensor_type}_calibrated"
@@ -105,6 +111,7 @@ class CalibratedSensor(SensorEntity):
             "factor": factor,
             "offset": offset,
             "formula": f"value × {factor} + {offset}",
+            "calibrated_at": calibrated_at,
         }
 
     @property
@@ -145,11 +152,11 @@ class CalibratedSensor(SensorEntity):
         try:
             raw = float(state.state)
             calibrated = self._factor * raw + self._offset
+            # Clamp to valid range
+            calibrated = max(self._min_value, min(self._max_value, calibrated))
             # Round reasonably
             if self._sensor_type == "illuminance":
                 self._attr_native_value = round(calibrated, 0)
-            elif self._sensor_type == "temperature":
-                self._attr_native_value = round(calibrated, 1)
             else:
                 self._attr_native_value = round(calibrated, 1)
         except (ValueError, TypeError):
