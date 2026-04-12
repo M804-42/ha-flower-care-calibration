@@ -15,9 +15,12 @@ from .const import (
     CONF_CALIBRATED_AT,
     CONF_DEVICE_ID,
     CONF_FACTOR,
+    CONF_FACTOR2,
     CONF_OFFSET,
+    CONF_OFFSET2,
     CONF_SENSORS,
     CONF_SOURCE_ENTITY,
+    CONF_THRESHOLD,
     DOMAIN,
     SENSOR_TYPES,
 )
@@ -52,6 +55,9 @@ async def async_setup_entry(
             continue
         factor = config.get(CONF_FACTOR, 1.0)
         offset = config.get(CONF_OFFSET, 0.0)
+        factor2 = config.get(CONF_FACTOR2, factor)
+        offset2 = config.get(CONF_OFFSET2, offset)
+        threshold = config.get(CONF_THRESHOLD)
         calibrated_at = config.get(CONF_CALIBRATED_AT, "")
 
         entities.append(
@@ -63,6 +69,9 @@ async def async_setup_entry(
                 source_entity_id=source_entity_id,
                 factor=factor,
                 offset=offset,
+                factor2=factor2,
+                offset2=offset2,
+                threshold=threshold,
                 calibrated_at=calibrated_at,
             )
         )
@@ -86,6 +95,9 @@ class CalibratedSensor(SensorEntity):
         source_entity_id: str,
         factor: float,
         offset: float,
+        factor2: float,
+        offset2: float,
+        threshold: float | None,
         calibrated_at: str,
     ) -> None:
         """Initialize."""
@@ -96,6 +108,9 @@ class CalibratedSensor(SensorEntity):
         self._source_entity_id = source_entity_id
         self._factor = factor
         self._offset = offset
+        self._factor2 = factor2
+        self._offset2 = offset2
+        self._threshold = threshold
         self._min_value = SENSOR_TYPES[sensor_type]["min_value"]
         self._max_value = SENSOR_TYPES[sensor_type]["max_value"]
 
@@ -106,11 +121,17 @@ class CalibratedSensor(SensorEntity):
         self._attr_device_class = DEVICE_CLASS_MAP.get(sensor_type)
         self._attr_icon = type_info["icon"]
         self._attr_native_value = None
+
+        if threshold:
+            formula = (
+                f"≤{threshold}: ×{factor}+{offset} | >{threshold}: ×{factor2}+{offset2}"
+            )
+        else:
+            formula = f"value × {factor} + {offset}"
+
         self._attr_extra_state_attributes = {
             "source_entity": source_entity_id,
-            "factor": factor,
-            "offset": offset,
-            "formula": f"value × {factor} + {offset}",
+            "formula": formula,
             "calibrated_at": calibrated_at,
         }
 
@@ -151,7 +172,10 @@ class CalibratedSensor(SensorEntity):
 
         try:
             raw = float(state.state)
-            calibrated = self._factor * raw + self._offset
+            if self._threshold is not None and raw > self._threshold:
+                calibrated = self._factor2 * raw + self._offset2
+            else:
+                calibrated = self._factor * raw + self._offset
             # Clamp to valid range
             calibrated = max(self._min_value, min(self._max_value, calibrated))
             # Round reasonably
