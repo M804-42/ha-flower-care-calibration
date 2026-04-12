@@ -1,6 +1,7 @@
 # Flower Care Calibration
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20this%20project-FF5E5B?logo=ko-fi)](https://ko-fi.com/m80442)
 
 ---
 
@@ -185,6 +186,13 @@ Nach der Einrichtung werden neue Sensor-Entitäten erstellt:
 Diese Entitäten in der Pflanzenkonfiguration anstelle der Rohwerte verwenden.
 
 ---
+
+## Support / Unterstützung
+
+If this integration is useful to you, consider buying me a coffee! ☕
+Wenn dir diese Integration hilft, freue ich mich über einen Kaffee! ☕
+
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/m80442)
 
 ## License / Lizenz
 
