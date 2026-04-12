@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [0.2.1] - 2026-04-12
+
+### Fixed
+- Correct extrapolation below lowest calibration point: values below the first measurement now use origin-based interpolation instead of the linear offset, preventing nonsensical high readings at low light levels
+- Removed unused import in sensor.py
+- Fixed import order in config_flow.py
+
+---
+
 ## [0.2.0] - 2026-04-12
 
 ### Added
