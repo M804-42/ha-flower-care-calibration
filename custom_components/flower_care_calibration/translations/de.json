@@ -66,7 +66,7 @@
     "step": {
       "calibrate_illuminance": {
         "title": "Beleuchtungsstärke neu kalibrieren",
-        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: Faktor {current_factor}, Offset {current_offset}\n\nNeue Messwerte eingeben oder Felder leerlassen um bestehende Kalibrierung beizubehalten.",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: {current_correction}\n\nNeue Messwerte eingeben oder Felder leerlassen um bestehende Kalibrierung beizubehalten.",
         "data": {
           "p1_raw": "Messung 1 — MI-Sensor (lx)",
           "p1_ref": "Messung 1 — Lux-Meter (lx)",
@@ -78,7 +78,7 @@
       },
       "calibrate_moisture": {
         "title": "Bodenfeuchte neu kalibrieren",
-        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: Faktor {current_factor}, Offset {current_offset}\n\nNeue Messwerte eingeben oder Felder leer lassen um bestehende Kalibrierung beizubehalten.",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: {current_correction}\n\nNeue Messwerte eingeben oder Felder leer lassen um bestehende Kalibrierung beizubehalten.",
         "data": {
           "p1_raw": "Messung 1 — MI-Sensor (%)",
           "p1_ref": "Messung 1 — Referenz (%)",
@@ -90,7 +90,7 @@
       },
       "calibrate_conductivity": {
         "title": "Leitfähigkeit neu kalibrieren",
-        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: Faktor {current_factor}, Offset {current_offset}\n\nNeue Messwerte eingeben oder Felder leer lassen um bestehende Kalibrierung beizubehalten.",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: {current_correction}\n\nNeue Messwerte eingeben oder Felder leer lassen um bestehende Kalibrierung beizubehalten.",
         "data": {
           "p1_raw": "Messung 1 — MI-Sensor (µS/cm)",
           "p1_ref": "Messung 1 — Referenz (µS/cm)",
@@ -102,7 +102,7 @@
       },
       "calibrate_temperature": {
         "title": "Temperatur neu kalibrieren",
-        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: Faktor {current_factor}, Offset {current_offset}\n\nNeue Messwerte eingeben oder Felder leer lassen um bestehende Kalibrierung beizubehalten.",
+        "description": "Sensor: **{entity_id}**\nAktueller Messwert: **{current_value}**\nAktuelle Korrektur: {current_correction}\n\nNeue Messwerte eingeben oder Felder leer lassen um bestehende Kalibrierung beizubehalten.",
         "data": {
           "p1_raw": "Messung 1 — MI-Sensor (°C)",
           "p1_ref": "Messung 1 — Referenz (°C)",
