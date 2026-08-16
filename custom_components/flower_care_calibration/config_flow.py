@@ -117,11 +117,15 @@ def find_sensor_entities(hass, device_id: str) -> dict[str, str]:
                 continue
             if entity.platform != "xiaomi_ble":
                 continue
-            # Match by device_class or unit
-            if device_class and entity.original_device_class == device_class:
-                found[sensor_type] = entity.entity_id
-                break
-            if unit in (entity.unit_of_measurement or ""):
+            # Prefer device_class match; fall back to unit only when no device_class
+            # is defined for this sensor type (e.g. conductivity). The unit-based
+            # fallback must not be used for types that have a device_class because
+            # both moisture and battery share "%" — causing wrong entity assignment.
+            if device_class:
+                if entity.original_device_class == device_class:
+                    found[sensor_type] = entity.entity_id
+                    break
+            elif entity.unit_of_measurement == unit:
                 found[sensor_type] = entity.entity_id
                 break
 
