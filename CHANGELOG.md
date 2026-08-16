@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [0.2.2] - 2026-08-16
+
+### Fixed
+- Moisture sensor no longer incorrectly matched to the battery entity during calibration. Both share `%` as unit; the unit-based entity fallback now only applies to sensor types without a `device_class` (conductivity). All other types are matched exclusively by `device_class` (#1)
+
+---
+
 ## [0.2.1] - 2026-04-12
 
 ### Fixed
