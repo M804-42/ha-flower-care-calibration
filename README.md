@@ -3,6 +3,10 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20this%20project-FF5E5B?logo=ko-fi)](https://ko-fi.com/m80442)
 
+> **Note:** This is a hobby project maintained in my spare time. Issues and PRs are welcome, but response times may vary.
+>
+> **Hinweis:** Dies ist ein Hobbyprojekt, das ich in meiner Freizeit pflege. Issues und PRs sind willkommen, aber ich kann nicht garantieren, dass ich zeitnah antworte.
+
 ---
 
 ## English
